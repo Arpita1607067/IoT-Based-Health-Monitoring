@@ -1,0 +1,57 @@
+import serial
+import os
+import urllib
+import requests
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+
+ser = serial.Serial('/dev/ttyACM0',9600, timeout=1)
+ser.reset_input_buffer()
+s = [0,1]
+
+db = firestore.client()
+
+while True:
+        line = ser.readline().decode('utf-8').rstrip()
+        print(line)
+	#read_serial=ser.readline()
+	#s[0] = str(ser.readline())
+	#print (s[0])
+	#string=s[0]
+        print("\nmotion in X axis\n")
+        x=str(line[0:5])
+        print(x)
+        y=str(line[9:13])
+        print("\nmotion in Y axis\n")
+        print(y)
+        print("\nmotion in Z axis\n")
+        z=str(line[18:22])
+        print(z)
+        print("\ntemperature\n")
+        temperature=str(line[32:35])
+        print (temperature)
+        print("\nGSR\n")
+        gsr=str(line[43:49])
+        print(gsr)
+        print("\nHeart Beat\n")
+        pulse=str(line[51:56])
+        print(pulse)
+        print("\nDiastolic pressure\n")
+        dias=str(line[58:62])
+        print(dias)
+        print("\nSystolic pressure\n")
+        syst=str(line[66:72])
+        print(syst)
+        print("\n SpO2\n")
+        spo2=str(line[73:80])
+        print(spo2)
+        db.collection('person').add({'temperature':temperature, 'X':x, 'Y':y, 'Z':z, 'Heartbeat':pulse, 'Diastolic Pressure':dias, 'Systolic Pressure':syst, 'Sp02':spo2})
+	#http_address = "http://esp.dreambdit.com/insertdata.php?"
+	#request_string = http_address + "humadity=" + humadity + "&temperature=" + temperature + "&flame=" + flame + "&gas=" + gas
+	#data = requests.get(request_string).json
+	
+
